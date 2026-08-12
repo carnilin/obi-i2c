@@ -69,47 +69,57 @@ module obi_i2c (
     logic [DATA_WIDTH-1:0] data_mask;
     assign data_mask = {{8{obi_abe_i[3]}}, {8{obi_abe_i[2]}}, {8{obi_abe_i[1]}}, {8{obi_abe_i[0]}}};
 
+    logic [DATA_WIDTH-1:0] addr_reg_target;
+    assign addr_reg_target = {28'b0, obi_aaddr_i[3:2], 2'b0};
+
     always_ff @(posedge clk_i) begin
-        if (obi_a_fire) begin
-            case ({28'b0, obi_aaddr_i[3:2], 2'b0})
-                I2C_STATUS_REG: begin
-                    if (~obi_awe_i)
-                        obi_rdata_o <= i2c_status_reg;
-                end
-                I2C_DATA_REG: begin
-                    if (obi_awe_i)
-                        i2c_data_reg <= obi_awdata_i & data_mask;
-                    else
-                        obi_rdata_o <= i2c_data_reg;
-                end
-                I2C_SPEED_REG: begin
-                    if (obi_awe_i)
-                        i2c_speed_reg <= obi_awdata_i & data_mask;
-                    else
-                        obi_rdata_o <= i2c_speed_reg;
-                end
-                default: ; // do nothing for unknown addresses
-            endcase
+        if (~rstn_i) begin
+            i2c_data_reg  <= 0;
+            //i2c_speed_reg <= SET THIS WHEN TESTING IS COMPLETED 
+            state_reg <= ADDR;
+        end
+        else begin
+            if (obi_a_fire) begin
+                case (addr_reg_target)
+                    I2C_STATUS_REG: begin
+                        if (~obi_awe_i)
+                            obi_rdata_o <= i2c_status_reg;
+                    end
+                    I2C_DATA_REG: begin
+                        if (obi_awe_i)
+                            i2c_data_reg <= obi_awdata_i & data_mask;
+                        else
+                            obi_rdata_o <= i2c_data_reg;
+                    end
+                    I2C_SPEED_REG: begin
+                        if (obi_awe_i)
+                            i2c_speed_reg <= obi_awdata_i & data_mask;
+                        else
+                            obi_rdata_o <= i2c_speed_reg;
+                    end
+                    default: ; // do nothing for unknown addresses
+                endcase
+            end
         end
     end
 
     // OBI HANDSHAKE SIGNALS
     assign obi_agnt_o   = (state_reg == ADDR);
-    assign obi_rvalid_o = (state_reg == RESP) & i2c_ready;
+    assign obi_rvalid_o = (state_reg == RESP);
 
     // I2C MASTER
     logic       i2c_done_tick;
-    logic       i2c_ready;
     logic [7:0] i2c_dout;
     logic       i2c_ack;
 
-    logic wr_i2c_reg;
+    logic       wr_i2c_reg;
 
-    always_ff @(posedge clk_i, i2c_done_tick)
-        if (i2c_done_tick)
-            wr_i2c_reg <= 1'b0;
-        else
-            wr_i2c_reg <= obi_a_fire & obi_awe_i;
+    tri scl, sda; // to avoid warnings
+
+    always_ff @(posedge clk_i) begin
+        if (state_reg == ADDR)
+            wr_i2c_reg <= obi_a_fire & obi_awe_i & (addr_reg_target == I2C_DATA_REG);
+    end
 
     i2c_master i2c(
         // clk, reset
@@ -125,8 +135,12 @@ module obi_i2c (
         // outputs
         .dout   (i2c_dout),
         .ack    (i2c_ack),
-        .ready  (i2c_ready),
-        .done_tick (i2c_done_tick)
+        .ready  (i2c_status_reg[9]),
+        .done_tick (i2c_done_tick),
+
+        // scl, sda
+        .sda(sda),
+        .scl(scl)
     );
 
     // I2C RX BUFFER
