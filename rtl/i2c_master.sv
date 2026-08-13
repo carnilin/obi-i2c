@@ -1,5 +1,3 @@
-`timescale 1ns/1ns
-
 module i2c_master(
     input logic clk, reset,
 
@@ -78,7 +76,8 @@ module i2c_master(
     assign dout = rx_reg[8:1];
     assign ack  = rx_reg[0];
 
-    // HARD WIRED TO ZERO, MIGHT BE A PROBLEM
+    // MASTER ALWAYS SIGNALS
+    // ACKNOWLEDGEMENT OF READ OP
     assign nack = 1'b0;
 
     always_ff @(posedge clk, posedge reset)
@@ -113,7 +112,7 @@ module i2c_master(
         done_tick_i = 1'b0;
         ready_i     = 1'b0;
             
-        // BOTH HIGH BY DEFAULT
+        // HIGH IF NOT SPECIFIED BELOW
         scl_out     = 1'b1;
         sda_out     = 1'b1;
 
