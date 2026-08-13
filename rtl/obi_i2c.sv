@@ -114,7 +114,7 @@ module obi_i2c (
 
     logic       wr_i2c_reg;
 
-    tri scl, sda; // to avoid warnings
+    tri1 scl, sda; // to avoid warnings
 
     always_ff @(posedge clk_i) begin
         if (state_reg == ADDR)

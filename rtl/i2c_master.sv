@@ -13,8 +13,8 @@ module i2c_master(
     output logic ready,
     output logic done_tick,
 
-    output tri scl,
-    inout tri sda
+    output tri1 scl,
+    inout tri1 sda
     );
 
     // COMMAND ENCODINGS
