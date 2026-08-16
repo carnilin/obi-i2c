@@ -142,7 +142,7 @@ module obi_i2c (
         .RESET_VALUE (9'b0)
     ) i2c_rx_buffer (
         .clk  (clk_i),
-        .rstn (~rstn_i),
+        .rstn (rstn_i),
         .ce   (i2c_done_tick),
         .in   ({i2c_ack, i2c_dout}),
         .out  (i2c_status_reg[8:0])
