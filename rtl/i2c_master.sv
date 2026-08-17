@@ -1,3 +1,5 @@
+`timescale 1ns/1ns
+
 module i2c_master(
     input logic clk, reset,
 
@@ -192,8 +194,11 @@ module i2c_master(
                 data_phase = 1'b1;
                 if (c_reg == qutr) begin
                     c_next = 0;
-                    state_next = data3;
-                    rx_next = {rx_reg[7:0], sda};
+                    if (scl == 1'b1) begin
+                        state_next = data3;
+                        rx_next = {rx_reg[7:0], sda};
+                    end else
+                        state_next = data2;
                 end
             end
 

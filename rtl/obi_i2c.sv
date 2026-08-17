@@ -55,7 +55,26 @@ module obi_i2c (
     end
 
     // OBI ERROR
-    assign obi_rerr_o = 1'b0;
+    logic rerr_reg, rerr_next;
+    assign obi_rerr_o = rerr_reg;
+
+    always_ff @(posedge clk_i, negedge rstn_i) begin
+        if (~rstn_i)
+            rerr_reg <= 1'b0;
+        else
+            rerr_reg <= rerr_next;
+    end
+
+    always_comb begin
+        rerr_next = rerr_reg;
+
+        if (state_reg == ADDR) begin
+            case (addr_reg_target)
+                I2C_STATUS_REG, I2C_DATA_REG, I2C_SPEED_REG: rerr_next = 1'b0;
+                default: rerr_next = 1'b1;
+            endcase
+        end
+    end
 
     // OBI ADDR PHASE
     logic [DATA_WIDTH-1:0] data_mask;
@@ -63,7 +82,7 @@ module obi_i2c (
 
     assign data_mask = { {8{obi_abe_i[3]}}, {8{obi_abe_i[2]}}, {8{obi_abe_i[1]}}, {8{obi_abe_i[0]}} };
 
-    assign addr_reg_target = {28'b0, obi_aaddr_i[3:2], 2'b0};
+    assign addr_reg_target = {28'b0, obi_aaddr_i[3:0]};
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
