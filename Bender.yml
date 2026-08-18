@@ -7,3 +7,4 @@ dependencies:
 
 sources:
   - rtl/obi_i2c.sv
+  - rtl/i2c_master.sv
