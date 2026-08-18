@@ -1,5 +1,5 @@
 package:
-  name: obi_i2c
+  name: obi-i2c
   authors: ["Lin Čarni <lincarni2005@gmail.com>"]
 
 dependencies:
