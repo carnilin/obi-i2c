@@ -13,7 +13,7 @@ module obi_i2c (
     output logic                    obi_rvalid_o,
     input  logic                    obi_rready_i,
     output logic [DATA_WIDTH-1:0]   obi_rdata_o,
-    output logic                    obi_rerr_o    // TIED OFF
+    output logic                    obi_rerr_o
     );
 
     // NOT A GLOBAL PARAMETER FOR SAFETY REASONS
@@ -87,7 +87,7 @@ module obi_i2c (
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             i2c_data_reg  <= 0;
-            //i2c_speed_reg <= SET THIS WHEN TESTING IS COMPLETED 
+            //i2c_speed_reg <= DEFAULT I2C SPEED, SET THIS WHEN TESTING IS COMPLETED
             state_reg <= ADDR;
         end
         else begin
