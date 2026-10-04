@@ -30,6 +30,8 @@ module obi_i2c (
     logic [DATA_WIDTH-1:0] i2c_data_reg;
     logic [DATA_WIDTH-1:0] i2c_speed_reg;
 
+    assign i2c_status_reg[DATA_WIDTH-1:10] = 0;
+
     // OBI STATE FSM
     typedef enum logic {
         ADDR,
