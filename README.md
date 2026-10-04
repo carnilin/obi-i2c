@@ -36,7 +36,7 @@ Bits 7-0 hold the data read from the <b>last issued</b> read operation. Reading 
 This register drives the command and data inputs to the I<sup>2</sup>C Master module. Writing into this register is the primary way to send/receive data over I<sup>2</sup>C. With bit 31 being the left-most bit, the meaning of the bits is as follows:
 
 ```
-[31:11] -- Hard Wired to 0
+[31:11] -- Unused
 [10:8]  -- Command
 [7:0]   -- Data
 ```
@@ -58,7 +58,7 @@ WRITE and READ commands can only be performed after a START or RESTART command w
 The speed register is used to control the I<sup>2</sup>C frequency, that the I<sup>2</sup>C Master communicates with. With bit 31 being the left-most bit, the meaning of the bits is as follows:
 
 ```
-[31:16] -- Hard Wired to 0
+[31:16] -- Unused
 [15:0]  -- Divisor
 ```
 
