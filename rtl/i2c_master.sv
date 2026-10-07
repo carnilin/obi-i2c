@@ -11,8 +11,8 @@ module i2c_master(
     output logic ready,
     output logic done_tick,
 
-    output tri1 scl,
-    inout tri1 sda
+    output tri scl,
+    inout tri sda
     );
 
     // COMMAND ENCODINGS
@@ -271,8 +271,9 @@ module i2c_master(
             end
         endcase
 
-        assign done_tick = done_tick_i;
-        assign ready = ready_i;
     end
+
+    assign done_tick = done_tick_i;
+    assign ready     = ready_i;
 
 endmodule

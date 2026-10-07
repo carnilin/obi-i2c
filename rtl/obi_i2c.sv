@@ -127,7 +127,7 @@ module obi_i2c (
     logic [7:0] i2c_dout;
     logic       i2c_ack;
 
-    tri1 scl, sda; // to avoid warnings
+    tri scl, sda; // to avoid warnings
 
     logic wr_i2c_reg;
 
